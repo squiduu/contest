@@ -8,13 +8,12 @@ from tqdm import tqdm
 file_dir = "../database/train/paper/"
 file_list = os.listdir(file_dir)
 
+train = pd.DataFrame(columns=["id", "title", "context", "summary"])
 id = 1
 
 for file in tqdm(file_list):
     with open(os.path.join(file_dir, file), encoding="utf-8") as f:
         train_data = json.load(f)
-
-    train = pd.DataFrame(columns=["id", "title", "context", "summary"])
 
     for data in train_data["data"]:
         train.loc[id, "id"] = data["reg_no"]
