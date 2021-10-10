@@ -23,7 +23,8 @@ for data in tqdm(train_data):
         train.loc[uid, "region"] = data["region"]
         train.loc[uid, "context"] = context[:-1]
         train.loc[uid, "summary"] = data["label"][agenda]["summary"]
-        train.loc[uid, "total"] = data["title"] + " " + data["region"] + " " + context[:-1]
+        train.loc[uid, "total"] = \
+            data["title"] + " " + data["region"] + " " + context[:-1]
         uid += 1
 
 train = train[["id", "summary", "total"]]
@@ -41,7 +42,8 @@ for data in tqdm(test_data):
         test.loc[uid, "title"] = data["title"]
         test.loc[uid, "region"] = data["region"]
         test.loc[uid, "context"] = context[:-1]
-        test.loc[uid, "total"] = data["title"] + " " + data["region"] + " " + context[:-1]
+        test.loc[uid, "total"] = \
+            data["title"] + " " + data["region"] + " " + context[:-1]
         uid += 1
 
 test = test[["id", "total"]]
