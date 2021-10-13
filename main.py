@@ -41,7 +41,6 @@ if __name__ == "__main__":
     file_list = os.listdir(file_dir)
 
     pre_data = pd.DataFrame(columns=["id", "total", "summary"])
-
     for file in tqdm(file_list):
         with open(os.path.join(file_dir, file), encoding="utf-8") as f:
             data = json.load(f)
@@ -55,9 +54,7 @@ if __name__ == "__main__":
     # pre_data = parallel_df(pre_data, make_total_token, n_cores=4)
     # pre_data = parallel_df(pre_data, make_summary_token, n_cores=4)
     pre_data["total_token"] = pre_data.total.progress_apply(
-        lambda x: tok._tokenize(x)
-    )
+        lambda x: tok._tokenize(x))
     pre_data["summary_token"] = pre_data.summary.progress_apply(
-        lambda x: tok._tokenize(x)
-    )
+        lambda x: tok._tokenize(x))
     pre_data.to_json("preprocessed_data.json", force_ascii=False)
