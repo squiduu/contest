@@ -1,35 +1,18 @@
 import os
 import re
 
-from soyspacing.countbase import CountSpace
+from pykospacing import Spacing
 
 
 class preprocessing:
-    def __init__(self, model_path, verbose, min_count, force_abs_threshold,
-                 nonspace_threshold, space_threshold):
+    def __init__(self):
+        # verbose, min_count, force_abs_threshold,
+        # nonspace_threshold, space_threshold):
         """
-        Set the parameters for spacing correction
-        mode : train/inference
+        For preprocessing Korean documents
         """
-        self.model_path = model_path
-        self.verbose = verbose
-        self.mc = min_count
-        self.ft = force_abs_threshold
-        self.nt = nonspace_threshold
-        self.st = space_threshold
 
-        self.model = CountSpace()
-
-        if os.path.isfile(self.model_path):
-            self.model.load_model(self.model_path, json_format=False)
-
-    def train(self, corpus_path):
-        self.model.train(corpus_path)
-        self.model.save_model(self.model_path)
-        print("모델 학습을 완료했습니다.")
-
-    def spacing(self, sentence):
-        return self.model.correct(sentence)
+        self.spacing = Spacing()
 
     def correct_doc(self, doc):
         """
@@ -38,7 +21,7 @@ class preprocessing:
         # Remove links
         doc = \
             re.sub(
-                r"(http)([s:/]{3,4})?)?[a-z0-9]+([\.][a-z0-9]+)+[\S]+",
+                r"((http)([s:/]{3,4})?)?[a-z0-9]+([\.][a-z0-9]+)+[\S]+",
                 " ",
                 doc
                 )
@@ -53,23 +36,18 @@ class preprocessing:
         doc = \
             re.sub(r"[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9\s\?\!\.\-()$%+=\'\":\\]", " ", doc)
         # Remove tags
-        doc = \
-            re.sub(r"<(\/)?[a-z]+>", "", doc)
+        doc = re.sub(r"<(\/)?[a-z]+>", "", doc)
         # Reduce repetition
-        doc = \
-            re.sub(r"([^가-힣a-zA-Z0-9])\1{1,}", r"\1", doc)
-        doc = \
-            re.sub(r"([^0-9])\1{3,}", r"\1\1\1", doc)
+        doc = re.sub(r"([^가-힣a-zA-Z0-9])\1{1,}", r"\1", doc)
+        doc = re.sub(r"([^0-9])\1{3,}", r"\1\1\1", doc)
 
         # Remove chosung
-        doc = \
-            re.sub(r"[ㄱ-ㅎㅏ-ㅣ]+", " ", doc)
+        doc = re.sub(r"[ㄱ-ㅎㅏ-ㅣ]+", " ", doc)
         # Remove spaces
-        doc = \
-            re.sub(r"[ ]{2,}", " ", doc)
+        doc = re.sub(r"[ ]{2,}", " ", doc)
         # Arrange spaces between period
-        doc = \
-            re.sub(r"(\s\.\s)", ". ", doc)
+        doc = re.sub(r"(\s\.\s)", ". ", doc)
+        
         # Arrange puctuation
         doc = doc.replace(".. ", "")
         doc = doc.replace(".? ", "?")
@@ -85,7 +63,4 @@ class preprocessing:
 
         doc = doc.strip()
 
-        # Arrange with spacing
-        doc = self.model.correct(doc)
-
-        return doc
+        return self.spacing(doc)
