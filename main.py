@@ -26,6 +26,7 @@ def make_summary_token(data):
     )
     return data
 
+
 def parallel_df(df, func, n_cores):
     df_split = np.array_split(df, n_cores)
     pool = mp.Pool(n_cores)
@@ -33,6 +34,7 @@ def parallel_df(df, func, n_cores):
     pool.close()
     pool.join()
     return df
+
 
 if __name__ == "__main__":
     file_dir = "./database/train/"
@@ -44,7 +46,7 @@ if __name__ == "__main__":
         with open(os.path.join(file_dir, file), encoding="utf-8") as f:
             data = json.load(f)
             pre_data = pd.concat(
-                [pre_data, pd.DataFrame(data)], 
+                [pre_data, pd.DataFrame(data)],
                 ignore_index=True
                 )
 
@@ -58,5 +60,4 @@ if __name__ == "__main__":
     pre_data["summary_token"] = pre_data.summary.progress_apply(
         lambda x: tok._tokenize(x)
     )
-
     pre_data.to_json("preprocessed_data.json", force_ascii=False)
