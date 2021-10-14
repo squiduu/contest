@@ -1,11 +1,12 @@
 import json
-import multiprocessing 
-import numpy as np
+import multiprocessing
 import os
+
+import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from common.tokenizer import tokenizer
 
+from common.tokenizer import tokenizer
 
 # tqdm.pandas()
 
@@ -31,16 +32,16 @@ total_token = {}
 def apply_async_tokenize_summary(data, tokenizer, num_cores):
 
     summary = data['summary']
+    summary2 = {}
 
-    for id, sentence in summary.items():
-        summary.update(id=tokenizer._preprocessing(sentence))
+    for id, sentence in tqdm(summary.items()):
+        summary2[id]=tokenizer._preprocessing(sentence)
     
     p = multiprocessing.Pool(num_cores)
 
-    for doc_num ,document in summary.items():
+    for doc_num ,document in summary2.items():
         p.apply_async(tokenizer._tokenize, (document, doc_num), callback=result_update)
-
-    
+        print("=" * 20)
     p.close()
     p.join()
 
@@ -48,16 +49,16 @@ def apply_async_tokenize_summary(data, tokenizer, num_cores):
 def apply_async_tokenize_total(data, tokenizer, num_cores):
 
     total = data['total']
+    total2 = {}
 
-    for id, sententce in total.items():
-        total.update(id=tokenizer._preprocessing(sententce))
+    for id, sententce in tqdm(total.items()):
+        total2[id]=tokenizer._preprocessing(sententce)
     
     p = multiprocessing.Pool(num_cores)
 
-    for doc_num ,document in total.items():
+    for doc_num ,document in total2.items():
         p.apply_async(tokenizer._tokenize, (document, doc_num), callback=result_update)
-
-    
+        print("=" * 20)
     p.close()
     p.join()
 
@@ -94,13 +95,14 @@ if __name__ == "__main__":
 
         num_cores = multiprocessing.cpu_count()
 
-        
         apply_async_tokenize_summary(data, tok, num_cores)
         apply_async_tokenize_total(data, tok, num_cores)
 
         data['total_token'] = total_token
         data['summary_token'] = summary_token
 
+        with open(f"./database/train/{file}_tokenized_{tok.model}_{tok.mode}.json", "w", encoding="utf-8") as save_f:
+            json.dump(data, save_f, ensure_ascii=False)
 
         summary_token = {}
         total_token = {}
