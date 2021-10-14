@@ -1,4 +1,3 @@
-import os
 import re
 
 from pykospacing import Spacing
@@ -6,12 +5,9 @@ from pykospacing import Spacing
 
 class preprocessing:
     def __init__(self):
-        # verbose, min_count, force_abs_threshold,
-        # nonspace_threshold, space_threshold):
         """
         For preprocessing Korean documents
         """
-
         self.spacing = Spacing()
 
     def correct_doc(self, doc):
@@ -34,7 +30,7 @@ class preprocessing:
                 )
         # Remove Special char
         doc = \
-            re.sub(r"[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9\s\?\!\.\-()$%+=\'\":\\]", " ", doc)
+            re.sub(r"[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9\s\?\!\.\-()$%+=\'\":]", " ", doc)
         # Remove tags
         doc = re.sub(r"<(\/)?[a-z]+>", "", doc)
         # Reduce repetition
@@ -47,11 +43,11 @@ class preprocessing:
         doc = re.sub(r"[ ]{2,}", " ", doc)
         # Arrange spaces between period
         doc = re.sub(r"(\s\.\s)", ". ", doc)
-        
+
         # Arrange puctuation
         doc = doc.replace(".. ", "")
-        doc = doc.replace(".? ", "?")
-        doc = doc.replace(".! ", "!")
+        doc = doc.replace(".?", "?")
+        doc = doc.replace(".!", "!")
 
         doc = doc.strip()
 

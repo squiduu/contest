@@ -41,7 +41,7 @@ class tokenizer:
         doc = pre.correct_doc(doc)
 
         sentences = kss.split_sentences(doc)
-        
+
         # 토크나이징
         pre_sents = []
         for sentence in sentences:
@@ -55,5 +55,5 @@ class tokenizer:
                         pre_sents.append(u"_" + morph.lex)
             if self.mode == "dec":
                 pre_sents.append(self.token["eos_token"])
-        
+
         return pre_sents
