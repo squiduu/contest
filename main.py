@@ -31,11 +31,14 @@ total_token = {}
 def apply_async_tokenize_summary(data, tokenizer, num_cores):
 
     summary = data['summary']
+
+    for id, sentence in summary.items():
+        summary.update(id=tokenizer._preprocessing)
     
     p = multiprocessing.Pool(num_cores)
 
     for doc_num ,document in summary.items():
-        p.apply_async(tok._tokenize, (document, doc_num), callback=result_update)
+        p.apply_async(tokenizer._tokenize, (document, doc_num), callback=result_update)
 
     
     p.close()
@@ -45,11 +48,14 @@ def apply_async_tokenize_summary(data, tokenizer, num_cores):
 def apply_async_tokenize_total(data, tokenizer, num_cores):
 
     total = data['total']
+
+    for id, sententce in total.items():
+        total.update(id=tokenizer._preprocessing)
     
     p = multiprocessing.Pool(num_cores)
 
     for doc_num ,document in total.items():
-        p.apply_async(tok._tokenize, (document, doc_num), callback=result_update)
+        p.apply_async(tokenizer._tokenize, (document, doc_num), callback=result_update)
 
     
     p.close()

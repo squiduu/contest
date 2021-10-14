@@ -33,12 +33,19 @@ class tokenizer:
         else:
             raise ValueError("처리 불가능한 모델입니다.")
 
+
+    def _preprocessing(self, doc):
+        pre = preprocessing()
+        doc = pre.correct_doc(doc)
+
+        return doc
+
     def _tokenize(self, doc, doc_num):
         # KhaiiiApi 호출
         api = KhaiiiApi()
 
-        pre = preprocessing()
-        doc = pre.correct_doc(doc)
+        # pre = preprocessing()
+        # doc = pre.correct_doc(doc)
 
         sentences = kss.split_sentences(doc)
 
