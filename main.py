@@ -21,6 +21,7 @@ if __name__ == "__main__":
     tok = tokenizer(model, mode)
 
     for file in tqdm(file_list):
+        left_file = len(file_list)
         # Get Data
         with open(os.path.join(file_dir, file), encoding="utf-8") as f:
             data = json.load(f)
@@ -39,3 +40,7 @@ if __name__ == "__main__":
         # Save file to Json
         with open(os.path.join(file_dir, new_file_name), "w") as f:
             json.dump(data, f)
+        
+        # Announcing for the number of left file
+        left_file -= 1
+        print(f"전처리할 파일이 {left_file}개 남았습니다.")
