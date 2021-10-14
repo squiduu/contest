@@ -33,7 +33,7 @@ class tokenizer:
         else:
             raise ValueError("처리 불가능한 모델입니다.")
 
-    def _tokenize(self, doc):
+    def _tokenize(self, doc, doc_num):
         # KhaiiiApi 호출
         api = KhaiiiApi()
 
@@ -56,4 +56,6 @@ class tokenizer:
             if self.mode == "dec":
                 pre_sents.append(self.token["eos_token"])
 
-        return pre_sents
+        paired = {doc_num:doc}
+
+        return paired

@@ -1,37 +1,73 @@
 import json
-import multiprocessing as mp
+import multiprocessing 
 import numpy as np
 import os
 import pandas as pd
-
 from tqdm import tqdm
-
 from common.tokenizer import tokenizer
 
-tqdm.pandas()
+
+# tqdm.pandas()
 
 
-def make_total_token(data):
-    data["total_token"] = data["total"].progress_apply(
-                                            lambda x: tok._tokenize(x)
-                                            )
-    return data
+summary_token = {}
+total_token = {}
 
 
-def make_summary_token(data):
-    data["summary_token"] = data["summary"].progress_apply(
-                                                lambda x: tok._tokenize(x)
-                                                )
-    return data
+# def make_total_token(data):
+#     data["total_token"] = data["total"].progress_apply(
+#                                             lambda x: tok._tokenize(x)
+#                                             )
+#     return data
 
 
-def parallel_df(df, func, n_cores):
-    df_split = np.array_split(df, n_cores)
-    pool = mp.Pool(n_cores)
-    df = pd.concat(pool.map(func, df_split))
-    pool.close()
-    pool.join()
-    return df
+# def make_summary_token(data):
+#     data["summary_token"] = data["summary"].progress_apply(
+#                                                 lambda x: tok._tokenize(x)
+#                                                 )
+#     return data
+
+
+def apply_async_tokenize_summary(data, tokenizer, num_cores):
+
+    summary = data['summary']
+    
+    p = multiprocessing.Pool(num_cores)
+
+    for doc_num ,document in summary.items():
+        p.apply_async(tok._tokenize, (document, doc_num), callback=result_update)
+
+    
+    p.close()
+    p.join()
+
+
+def apply_async_tokenize_total(data, tokenizer, num_cores):
+
+    total = data['total']
+    
+    p = multiprocessing.Pool(num_cores)
+
+    for doc_num ,document in total.items():
+        p.apply_async(tok._tokenize, (document, doc_num), callback=result_update)
+
+    
+    p.close()
+    p.join()
+
+
+def result_update(result):
+    if result is not None:
+        total_token.update(result)
+
+
+# def parallel_df(df, func, n_cores):
+#     df_split = np.array_split(df, n_cores)
+#     pool = mp.Pool(n_cores)
+#     df = pd.concat(pool.map(func, df_split))
+#     pool.close()
+#     pool.join()
+#     return df
 
 
 if __name__ == "__main__":
@@ -46,15 +82,28 @@ if __name__ == "__main__":
             #     [pre_data, pd.DataFrame(data)],
             #     ignore_index=True
             #     )
-        df = pd.DataFrame(columns=["id", "total", "summary"])
+        # df = pd.DataFrame(columns=["id", "total", "summary"])
 
-        tok = tokenizer("Kobart", "enc")
+        tok = tokenizer("kobart", "enc")
 
-        df = parallel_df(df, make_total_token, n_cores=6)
+        num_cores = multiprocessing.cpu_count()
 
-        df = parallel_df(df, make_summary_token, n_cores=6)
+        
+        apply_async_tokenize_summary(data, tok, num_cores)
+        apply_async_tokenize_total(data, tok, num_cores)
 
-        df.to_json(
-            os.path.join(file_dir, f"{file.replace('.json', '')}_token"),
-            force_ascii=False
-            )
+        data['total_token'] = total_token
+        data['summary_token'] = summary_token
+
+
+        summary_token = {}
+        total_token = {}
+
+        # df = parallel_df(df, make_total_token, n_cores=num_cores)
+
+        # df = parallel_df(df, make_summary_token, n_cores=num_cores)
+
+        # df.to_json(
+        #     os.path.join(file_dir, f"{file.replace('.json', '')}_token"),
+        #     force_ascii=False
+        #     )
