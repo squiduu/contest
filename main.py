@@ -38,22 +38,23 @@ if __name__ == "__main__":
     file_dir = "./database/train/"
     file_list = os.listdir(file_dir)
 
-    pre_data = pd.DataFrame(columns=["id", "total", "summary"])
+    # pre_data = pd.DataFrame(columns=["id", "total", "summary"])
     for file in tqdm(file_list):
         with open(os.path.join(file_dir, file), encoding="utf-8") as f:
             data = json.load(f)
-            pre_data = pd.concat(
-                [pre_data, pd.DataFrame(data)],
-                ignore_index=True
-                )
+            # pre_data = pd.concat(
+            #     [pre_data, pd.DataFrame(data)],
+            #     ignore_index=True
+            #     )
+        df = pd.DataFrame(columns=["id", "total", "summary"])
 
         tok = tokenizer("Kobart", "enc")
 
-        pre_data = parallel_df(pre_data, make_total_token, n_cores=6)
+        df = parallel_df(df, make_total_token, n_cores=6)
 
-        pre_data = parallel_df(pre_data, make_summary_token, n_cores=6)
+        df = parallel_df(df, make_summary_token, n_cores=6)
 
-        pre_data.to_json(
+        df.to_json(
             os.path.join(file_dir, f"{file.replace('.json', '')}_token"),
             force_ascii=False
             )
