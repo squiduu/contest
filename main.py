@@ -33,7 +33,7 @@ def apply_async_tokenize_summary(data, tokenizer, num_cores):
     summary = data['summary']
 
     for id, sentence in summary.items():
-        summary.update(id=tokenizer._preprocessing)
+        summary.update(id=tokenizer._preprocessing(sentence))
     
     p = multiprocessing.Pool(num_cores)
 
@@ -50,7 +50,7 @@ def apply_async_tokenize_total(data, tokenizer, num_cores):
     total = data['total']
 
     for id, sententce in total.items():
-        total.update(id=tokenizer._preprocessing)
+        total.update(id=tokenizer._preprocessing(sententce))
     
     p = multiprocessing.Pool(num_cores)
 
