@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 sys.path.append("../")
 
-from common.preprocessing import preprocessing
+from common.preprocessing import preprocessing  # noqa
 
 
 if __name__ == "__main__":
@@ -22,8 +22,8 @@ if __name__ == "__main__":
     for file in file_list:
         # Get Data
         with open(os.path.join(file_dir, file), encoding="utf-8") as f:
-            data =json.load(f)
-        
+            data = json.load(f)
+
         # Change format for preprocessing
         data = pd.DataFrame(data).to_json(orient="index", force_ascii=False)
         data = json.loads(data)
@@ -41,8 +41,11 @@ if __name__ == "__main__":
                     for text in texts:
                         context += text["sentence"]
             total = row["documents"]["title"] + ". " + context
+
             # Correct total data
             total = pre.correct_doc(total)
+            summary = pre.correct_doc(summary)
+
             # Spacing total and summary data
             row["summary"] = kss.split_sentences(summary)
             row["total"] = kss.split_sentences(total)
