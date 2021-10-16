@@ -1,14 +1,11 @@
 import re
 
-from pykospacing import Spacing
-
 
 class preprocessing:
     def __init__(self):
         """
         For preprocessing Korean documents
         """
-        self.spacing = Spacing()
 
     def correct_doc(self, doc):
         """
@@ -59,4 +56,4 @@ class preprocessing:
 
         doc = doc.strip()
 
-        return self.spacing(doc)
+        return doc
