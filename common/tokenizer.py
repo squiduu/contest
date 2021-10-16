@@ -1,6 +1,3 @@
-import kss
-
-from common.preprocessing import preprocessing
 from khaiii import KhaiiiApi
 
 
@@ -33,23 +30,13 @@ class tokenizer:
         else:
             raise ValueError("처리 불가능한 모델입니다.")
 
-
-    def _preprocess(self, doc):
-        pre = preprocessing()
-        doc = pre.correct_doc(doc)
-
-        return doc
-
     def _tokenize(self, doc):
         # KhaiiiApi 호출
         api = KhaiiiApi()
 
-        # 문장 분리
-        sentences = kss.split_sentences(doc)
-
         # 토크나이징
         pre_sents = []
-        for sentence in sentences:
+        for sentence in doc:
             if self.mode == "dec":
                 pre_sents.append(self.token["bos_token"])
             for word in api.analyze(sentence):
